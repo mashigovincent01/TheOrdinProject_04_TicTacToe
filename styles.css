@@ -1,0 +1,80 @@
+#board{
+    display: grid;
+    grid-template: 100px 100px 100px / 100px 100px 100px;
+}
+
+main{
+    width: 600px;
+    margin: auto;
+}
+
+#board div{
+    border: solid black 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+*{
+    box-sizing: border-box;
+}
+body{
+    margin: 0;
+    padding: 0;
+}
+h1{
+    text-align: center;
+}
+#controls{
+    text-align: center;
+    
+}
+#main{
+    padding-top: 40px;
+    height: calc(100vh - 160px);
+}
+footer{
+    height: 80px;
+    background-color: red;
+}
+#buttons{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding-top: 80px;
+    justify-content: center;
+    
+    
+}
+#turn{
+    font-size: 20px;
+}
+button{
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 20px;
+}
+#board-container{
+    display: flex;
+    
+    justify-content: center;
+}
+section{
+    display: grid;
+    grid-template: auto / 1fr 1fr;
+}
+
+#board div:nth-child(1), #board div:nth-child(2), #board div:nth-child(3){
+    border-top: none;
+}
+#board div:nth-child(1), #board div:nth-child(4), #board div:nth-child(7){
+    border-left: none;
+}
+#board div:nth-child(3), #board div:nth-child(6), #board div:nth-child(9){
+    border-right: none;
+}
+#board div:nth-child(7), #board div:nth-child(8), #board div:nth-child(9){
+    border-bottom: none;
+}
+
+

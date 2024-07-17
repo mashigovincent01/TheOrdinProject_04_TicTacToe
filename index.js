@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
             const log = console.log;
             let res = "";
             for(let i = 0; i < size; i++){
-                console.log(board[i])
+                
                 board[i].forEach((cell)=>{
                     res += cell.getToken() + " ";
                 });
@@ -54,14 +54,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
             placeToken
         }
         
-    })();
+    });
 
-    function GameController(
+    const GameController = (
         playerOneName = "Player One",
         playerTwoName = "Player Two"
-    ){
+    )=>{
         
-
+        
         const board = GameBoard();
 
         const players = [
@@ -75,11 +75,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
             }
 
         ];
-
+        
         let activePlayer = players[0];
 
         const switchPlayerTurn = ()=>{
             activePlayer = activePlayer === players[0] ? players[1] : players[0];
+        }
             const getActivePlayer = ()=> activePlayer;
 
             const printNewRound = () =>{
@@ -87,24 +88,88 @@ document.addEventListener("DOMContentLoaded", ()=>{
                 console.log(`${getActivePlayer().name} 's turn.`)
             }
 
-            const playRound = (column) =>{
+            const playRound = (row, col) =>{
                 console.log(
-                    ``
-                )
-            }
+                    `Placing ${getActivePlayer().name}'s token at cell ${row}, ${col}`
+                );
+                board.placeToken(row, col, getActivePlayer().token);
+
+                switchPlayerTurn();
+                printNewRound();
+            };
+            
+            printNewRound();
+
+            return {
+                playRound,
+                getActivePlayer,
+                getBoard: board.getBoard
+            };
         }
+    
+    function ScreenController(){
+        const divs = document.querySelectorAll("#board div");
+        const playerTurn = document.querySelector("#turn");
+        const game = GameController();
+        const map = [[0,0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]];
+        const updateScreen = ()=>{
+            //clear the board
+            divs.forEach((div)=>{
+                div.innerHTML = "";
+            });
+            
+            for(let i = 0; i < divs.length; i++){
+                let [row, col] = map[i];
+                divs[i].innerHTML = game.getBoard()[row][col].getToken();
+            }
+
+            const board = game.getBoard();
+            const activePlayer = game.getActivePlayer();
+            playerTurn.textContent = `${activePlayer.token}'s turn...`;
+        }
+        function clickHandlerBoard(e){
+            const id = parseInt(e.target.id);
+            let row = -1, col = -1;
+            
+            [row, col] = map[id-1];
+            game.playRound(row, col);
+            updateScreen();
+        }
+        divs.forEach((div)=>{
+            div.addEventListener("click", clickHandlerBoard);
+        });
+        
+        divs.forEach((div)=>{
+            div.addEventListener("click", (e)=>{
+                
+                
+            });
+        });
+
+        updateScreen();
+
     }
+    
+   // ScreenController();
+    const Game = (()=>{
 
+        const start = document.querySelector("#start");
+        const reset = document.querySelector("#reset");
 
-    GameBoard.placeToken(0, 0, "X");
-    GameBoard.placeToken(0, 1, "O");
-    GameBoard.placeToken(0, 2, "X");
-    GameBoard.placeToken(1, 0, "X");
-    GameBoard.placeToken(1, 1, "X");
-    GameBoard.placeToken(1, 2, "O");
-    GameBoard.placeToken(2, 0, "X");
-    GameBoard.placeToken(2, 1, "O");
-    GameBoard.placeToken(2, 2, "X");
-    GameBoard.placeToken(3,3, "O");
-    GameBoard.printBoard();
+        start.addEventListener("click", handleStartClick);
+        reset.addEventListener("click", handleResetClick);
+        function handleStartClick(){
+           ScreenController(); 
+        }
+
+        function handleResetClick(){
+            window.location.reload();
+        }
+    });
+    Game();
+    
 });
+
+
+
+
