@@ -63,7 +63,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
         
         
         const board = GameBoard();
-
+        let winner = "";
+        
         const players = [
             {
                 name: playerOneName,
@@ -87,20 +88,76 @@ document.addEventListener("DOMContentLoaded", ()=>{
                 board.printBoard();
                 console.log(`${getActivePlayer().name} 's turn.`)
             }
+            const win = ()=>{
+                const token = activePlayer.token;
+                console.log("Active player = " + token)
+                for (let i = 0; i < 3; i++) {
+                    //console.log(board.getBoard()[i][])
+                    if (board.getBoard()[i][0].getToken() === token && board.getBoard()[i][1].getToken() === token && board.getBoard()[i][2].getToken() === token) {
+                        return true;
+                    }
+                }
+            
+                // Check columns
+                for (let i = 0; i < 3; i++) {
+                    if (board.getBoard()[0][i].getToken() === token && board.getBoard()[1][i].getToken() === token && board.getBoard()[2][i].getToken() === token) {
+                        return true;
+                    }
+                }
+            
+                // Check diagonals
+                if (board.getBoard()[0][0].getToken() === token && board.getBoard()[1][1].getToken() === token && board.getBoard()[2][2].getToken() === token) {
+                    return true;
+                }
+                if (board.getBoard()[0][2].getToken() === token && board.getBoard()[1][1].getToken() === token && board.getBoard()[2][0].getToken() === token) {
+                    return true;
+                }
+                return false;
+            }
+
+            const gameOver = ()=>{
+                const myBoard = board.getBoard();
+                //=console.log(myBoard);
+                for(let i = 0; i < 3; i++){
+                    for(let j = 0; j < 3; j++){
+                        if(myBoard[i][j].getToken() === ""){
+                            
+                            
+                            console.log("Game over"); 
+                            return false;  
+                        }
+                    }
+                }
+                return true;
+            }
 
             const playRound = (row, col) =>{
-                console.log(
-                    `Placing ${getActivePlayer().name}'s token at cell ${row}, ${col}`
-                );
-                board.placeToken(row, col, getActivePlayer().token);
-
-                switchPlayerTurn();
-                printNewRound();
+                if(!gameOver()){
+                    console.log(
+                        `Placing ${getActivePlayer().name}'s token at cell ${row}, ${col}`
+                    );
+                    board.placeToken(row, col, getActivePlayer().token);
+                    /*
+                    if()
+                     */
+                    console.log(win());
+                    if(win()){
+                        winner = getActivePlayer().name + " (" + getActivePlayer().token + ")";
+                        return;
+                    }
+                    if(gameOver()){
+                        return;
+                    }
+                    switchPlayerTurn();
+                    printNewRound();
+                }
             };
-            
+            const getWinner = ()=> winner;
             printNewRound();
 
             return {
+                gameOver,
+                getWinner,
                 playRound,
                 getActivePlayer,
                 getBoard: board.getBoard
@@ -108,19 +165,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
         }
     
     function ScreenController(){
+        let winner = "";
+        let gameOver2 = false;
+        const result = document.querySelector("#result");
         const divs = document.querySelectorAll("#board div");
         const playerTurn = document.querySelector("#turn");
         const game = GameController();
         const map = [[0,0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]];
         const updateScreen = ()=>{
             //clear the board
+            
             divs.forEach((div)=>{
-                div.innerHTML = "";
+                div.textContent = "";
             });
             
             for(let i = 0; i < divs.length; i++){
                 let [row, col] = map[i];
-                divs[i].innerHTML = game.getBoard()[row][col].getToken();
+                divs[i].textContent = game.getBoard()[row][col].getToken();
             }
 
             const board = game.getBoard();
@@ -132,8 +193,32 @@ document.addEventListener("DOMContentLoaded", ()=>{
             let row = -1, col = -1;
             
             [row, col] = map[id-1];
-            game.playRound(row, col);
-            updateScreen();
+            if(game.gameOver()){
+                
+                gameOver2 = game.gameOver();
+                result.textContent = "DRAW!";
+                return
+            }
+            else if(game.getWinner() !== ""){
+                winner = game.getWinner();
+                result.textContent = game.getWinner() + " wins";
+                
+            }
+            else{
+                
+                game.playRound(row, col);
+                
+                updateScreen();
+                if(game.gameOver()){
+                    gameOver2 = gameOver();
+                    result.textContent = "DRAW!";
+                }
+                else if(game.getWinner() !== ""){
+                    winner = game.getWinner();
+                    result.textContent = game.getWinner() + " wins";
+                }
+
+            }
         }
         divs.forEach((div)=>{
             div.addEventListener("click", clickHandlerBoard);
@@ -145,6 +230,18 @@ document.addEventListener("DOMContentLoaded", ()=>{
                 
             });
         });
+        // console.log("Here Here")
+        if(gameOver2){
+            if(winner !== ""){
+                console.log("Draw");
+            }
+            else{
+                console.log(winner + "Wins");
+            }
+            return
+            
+        }
+        
 
         updateScreen();
 

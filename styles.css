@@ -37,6 +37,10 @@ footer{
     height: 80px;
     background-color: red;
 }
+#result{
+    font-size: 30px;
+    font-weight: bold;
+}
 #buttons{
     display: flex;
     flex-wrap: wrap;
